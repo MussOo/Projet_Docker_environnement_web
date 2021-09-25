@@ -1,0 +1,42 @@
+version: "3.1"
+services:
+    www:
+        build: .
+        ports: 
+            - "${PORT_APACHE}:80"
+        volumes:
+            - ${DOCUMENT_ROOT}:/var/www/html/ 
+            - ${VHOSTS_DIR}:/etc/apache2/sites-enabled
+            - ${PHP_INI}/php.ini:/usr/local/etc/php/php.ini
+        environment:
+            APACHE_DOCUMENT_ROOT: /var/www/html
+        restart: always
+        links:
+            - db
+        networks:
+            - default
+
+    db:
+        image: mysql:8.0
+        platform: linux/arm64/v8
+        ports: 
+            - "${PORT_MYSQL}:3306"
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_ROOT_PASSWORD: root
+        restart: always
+        volumes:
+            - ${LOCATE_BDD}:/docker-entrypoint-initdb.d
+        networks:
+            - default
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links: 
+            - db:db
+        restart: always
+        ports:
+            - ${PORT_PMA}:80
+        environment:
+            MYSQL_ROOT_PASSWORD: root
