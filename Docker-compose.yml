@@ -17,11 +17,10 @@ services:
             - default
 
     db:
-        image: mysql:8.0
-        platform: linux/arm64/v8
+        image: mysql:latest
         ports: 
             - "${PORT_MYSQL}:3306"
-        command: --default-authentication-plugin=mysql_native_password
+        command: --default-authentication-plugin=mysql_native_password 
         environment:
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_ROOT_PASSWORD: root
